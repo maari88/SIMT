@@ -1,0 +1,53 @@
+{
+  "host": "127.0.0.1",
+  "project": "lab-docker",
+  "timestamp": "2026-10-15T00:17:48.168463",
+  "source": "Docker Engine API",
+  "containers": [
+    {
+      "id": "5a726eb7c3754bd3e4d27eeef7bce65bdf2b02a600a5f6266b66f64a0e4c0707",
+      "service": "proxy",
+      "image": "nginx:alpine",
+      "state": "running",
+      "networks": {
+        "lab-docker_frontend": "172.19.0.4"
+      },
+      "ports": [
+        "80/tcp -> 0.0.0.0:8080",
+        "80/tcp -> [::]:8080"
+      ]
+    },
+    {
+      "id": "3c5849693f4ee4fe830bd59913653492eb6f41ec8a7fcd4e5991f474b30fbd09",
+      "service": "app",
+      "image": "lab-docker-app",
+      "state": "running",
+      "networks": {
+        "lab-docker_backend": "172.18.0.3",
+        "lab-docker_frontend": "172.19.0.2"
+      },
+      "ports": []
+    },
+    {
+      "id": "52463424f8a36c76efa63768a803c279265f8c3eb506c12b579e2b3b761148ec",
+      "service": "app",
+      "image": "lab-docker-app",
+      "state": "running",
+      "networks": {
+        "lab-docker_backend": "172.18.0.4",
+        "lab-docker_frontend": "172.19.0.3"
+      },
+      "ports": []
+    },
+    {
+      "id": "bd9936728208a89bc5d691cade35e022cb90586d35741cfcfb746d771e9873dc",
+      "service": "db",
+      "image": "redis:alpine",
+      "state": "running",
+      "networks": {
+        "lab-docker_backend": "172.18.0.2"
+      },
+      "ports": []
+    }
+  ]
+}
