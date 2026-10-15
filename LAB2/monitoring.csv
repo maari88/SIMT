@@ -1,0 +1,21 @@
+Time,HTTP_Status,Proxy_State,App_State,DB_State
+20:08:02,200,running,"running, running",running
+20:08:07,200,running,"running, running",running
+20:08:12,200,running,"running, running",running
+20:08:18,200,running,"running, running",running
+20:08:23,200,running,"running, running",running
+20:08:28,200,running,"running, running",running
+20:08:33,200,running,"running, running",running
+20:08:38,200,running,"running, running",running
+20:08:43,200,running,"running, running",running
+20:08:48,200,running,"running, running",running
+20:08:53,Error,running,"running, running",exited
+20:09:01,Error,running,"running, running",exited
+20:09:09,Error,running,"running, running",exited
+20:09:17,Error,running,"running, running",exited
+20:09:25,Error,running,"running, running",exited
+20:09:33,200,running,"running, running",running
+20:09:38,200,running,"running, running",running
+20:09:43,200,running,"running, running",running
+20:09:49,200,running,"running, running",running
+20:09:54,200,running,"running, running",running
