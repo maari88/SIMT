@@ -1,0 +1,4 @@
+Check,Status,Details
+Security (Ports),Passed,No extra ports
+HTTP Check,Passed,App responds
+CLI vs API,Matches,None
