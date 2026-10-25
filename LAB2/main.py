@@ -10,7 +10,7 @@ import sys
 SSH_HOST = "127.0.0.1"
 SSH_PORT = 22
 SSH_USER = "asa_null540"
-SSH_PASSWORD = "****"
+SSH_PASSWORD = ""
 PROJECT_NAME = "lab-docker"
 
 
