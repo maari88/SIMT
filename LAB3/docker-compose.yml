@@ -1,0 +1,107 @@
+services:
+  zabbix-db:
+    image: postgres:16.4-alpine3.20
+    container_name: zabbix-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - zabbix_db_data:/var/lib/postgresql/data
+    networks:
+      - monitoring_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:alpine-7.0.4
+    container_name: zabbix-server
+    restart: unless-stopped
+    depends_on:
+      zabbix-db:
+        condition: service_healthy
+    environment:
+      DB_SERVER_HOST: zabbix-db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - monitoring_net
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-pgsql:alpine-7.0.4
+    container_name: zabbix-web
+    restart: unless-stopped
+    depends_on:
+      zabbix-db:
+        condition: service_healthy
+      zabbix-server:
+        condition: service_started
+    environment:
+      ZBX_SERVER_HOST: zabbix-server
+      DB_SERVER_HOST: zabbix-db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PHP_TZ: Europe/Kyiv
+    ports:
+      - "8081:8080"
+    networks:
+      - monitoring_net
+
+  zabbix-agent:
+    image: zabbix/zabbix-agent2:alpine-7.0.4
+    container_name: zabbix-agent
+    user: "0:0"
+    restart: unless-stopped
+    depends_on:
+      - zabbix-server
+    environment:
+      ZBX_HOSTNAME: zabbix-agent
+      ZBX_SERVER_HOST: zabbix-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - monitoring_net
+
+  net-device:
+    build:
+      context: .
+      dockerfile: Dockerfile.snmp
+    image: simt-net-snmp:3.20.3
+    container_name: net-device
+    hostname: net-device-router
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: grafana
+    restart: unless-stopped
+    depends_on:
+      - zabbix-web
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: GrafanaAdmin_2026!
+      GF_INSTALL_PLUGINS: alexanderzobnin-zabbix-app 4.5.5
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monitoring_net
+
+volumes:
+  zabbix_db_data:
+  grafana_data:
+
+networks:
+  monitoring_net:
+    driver: bridge
