@@ -1,0 +1,35 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: a571c0d144b14fd4a87a9d9b2aa9fcd6
+      name: Templates/Applications
+  templates:
+    - uuid: a9cb751d7b504db88d87997adc1152d1
+      template: 'Custom LR1 App Latency Template'
+      name: 'Custom LR1 App Latency Template'
+      groups:
+        - name: Templates/Applications
+      items:
+        - uuid: eb3e247c1a9c41b8a41ae4821e0f00c6
+          name: 'Custom HTTP Check: Proxy Response Time (ms)'
+          type: CALCULATED
+          key: custom.proxy.resp.ms
+          delay: 15s
+          value_type: FLOAT
+          units: ms
+          params: 'last(//net.tcp.service.perf[http,host.docker.internal,8080])*1000'
+          triggers:
+            - uuid: fa748e9f66e743948cc669691a97637d
+              expression: 'last(/Custom LR1 App Latency Template/custom.proxy.resp.ms)>{$MAX_RESPONSE_MS}'
+              name: 'Custom LR1 App response time is higher than {$MAX_RESPONSE_MS} ms'
+              priority: WARNING
+        - uuid: 86ed253b4837484c9f03d6b4ba976261
+          name: 'Custom HTTP Check: Proxy Response Time (sec)'
+          key: 'net.tcp.service.perf[http,host.docker.internal,8080]'
+          delay: 15s
+          value_type: FLOAT
+          units: s
+      macros:
+        - macro: '{$MAX_RESPONSE_MS}'
+          value: '500'
+          description: 'Максимально допустимий час відповіді у мс'
