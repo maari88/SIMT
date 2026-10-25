@@ -1,0 +1,5 @@
+FROM alpine:3.20.3
+RUN apk add --no-cache net-snmp net-snmp-tools && mkdir -p /var/lib/net-snmp
+COPY snmpd.conf /etc/snmp/snmpd.conf
+RUN chmod 644 /etc/snmp/snmpd.conf
+CMD ["/usr/sbin/snmpd", "-f", "-Lo", "-C", "-c", "/etc/snmp/snmpd.conf"]
